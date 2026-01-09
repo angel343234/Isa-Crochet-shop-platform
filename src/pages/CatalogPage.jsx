@@ -9,7 +9,7 @@ const CatalogPage = () => {
     const [loading, setLoading] = useState(true);
     const { addToCart } = useCart();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
     const categoryParam = searchParams.get('cat') || 'all';
 
@@ -56,8 +56,8 @@ const CatalogPage = () => {
                             key={cat.id}
                             onClick={() => handleCategoryChange(cat.id)}
                             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition ${categoryParam === cat.id
-                                    ? 'bg-pink-600 text-white shadow-md'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-pink-600 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {cat.label}

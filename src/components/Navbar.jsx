@@ -111,6 +111,32 @@ const Navbar = () => {
                     </div>
                 </div>
             </div>
+
+            {/* BARRA DE BÚSQUEDA FLOTANTE - NUEVO */}
+            {isSearchOpen && (
+                <div className="absolute top-32 left-0 w-full bg-white shadow-md z-40 p-4 animate-in fade-in slide-in-from-top-2">
+                    <div className="max-w-3xl mx-auto flex gap-2">
+                        <input
+                            type="text"
+                            placeholder="Buscar en la tienda..."
+                            className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-brand-pink"
+                            autoFocus
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    navigate(`/catalogo?search=${e.target.value}`);
+                                    setIsSearchOpen(false);
+                                }
+                            }}
+                        />
+                        <button
+                            onClick={() => setIsSearchOpen(false)}
+                            className="text-gray-500 hover:text-gray-700 font-bold px-2"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </nav>
     );
 };
