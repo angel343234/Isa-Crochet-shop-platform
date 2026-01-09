@@ -12,6 +12,7 @@ const CartPage = () => {
     const [orderComplete, setOrderComplete] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [orderId, setOrderId] = useState(null);
+    const [finalTotal, setFinalTotal] = useState(0);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -45,18 +46,29 @@ const CartPage = () => {
     const handleConfirmOrder = async () => {
         setLoading(true);
 
+        // Generar ID aleatorio de 6 dígitos
+        const generatedId = Math.floor(100000 + Math.random() * 900000);
+
         try {
             const { data, error } = await supabase
                 .from('orders')
                 .insert([
                     {
+                        id: generatedId,
                         customer_name: formData.name,
                         customer_address: formData.address,
                         customer_phone: formData.phone,
                         total_price: totalPrice,
                         customer_phone: formData.phone,
                         total_price: totalPrice,
-                        items: cart,
+                        items: cart.map(item => ({
+                            id: item.id,
+                            name: item.nombre,
+                            price: item.precio,
+                            quantity: item.quantity,
+                            image_url: item.imagen_portada,
+                            selectedVariation: item.selectedVariation
+                        })),
                         user_id: user ? user.id : null
                     }
                 ])
@@ -64,6 +76,9 @@ const CartPage = () => {
 
             if (error) throw error;
 
+            if (error) throw error;
+
+            setFinalTotal(totalPrice); // Guardar el total antes de limpiar
             clearCart();
             setShowModal(false);
             if (data && data.length > 0) {
@@ -94,7 +109,7 @@ const CartPage = () => {
                         <h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Datos para Transferencia</h3>
                         <p className="mb-2"><span className="font-semibold">Banco:</span> BBVA</p>
                         <p className="mb-2"><span className="font-semibold">CLABE:</span> <span className="font-mono bg-gray-100 px-2 py-1 rounded select-all">XXXXXXXXXXX</span></p>
-                        <p className="text-xl font-bold text-pink-600 mt-4 text-center">Monto: ${totalPrice}</p>
+                        <p className="text-xl font-bold text-pink-600 mt-4 text-center">Monto: ${finalTotal}</p>
                     </div>
 
                     <p className="text-sm font-medium">

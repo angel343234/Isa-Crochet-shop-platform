@@ -39,7 +39,7 @@ const Navbar = () => {
                     <div className="flex-1 flex justify-center py-2 relative z-10">
                         <Link to="/" className="text-center group flex flex-col items-center">
                             <img
-                                src="/images/logo.jpg"
+                                src="/images/logo-new.png"
                                 alt="Isa Crochet"
                                 className="h-28 w-auto object-contain transform group-hover:scale-105 transition duration-500"
                             />
@@ -86,6 +86,7 @@ const Navbar = () => {
                     <Link to="/catalogo?cat=flores" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Flores</Link>
                     <Link to="/catalogo?cat=ramos" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Ramos</Link>
                     <Link to="/galeria" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Galería</Link>
+                    <Link to="/nosotros" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Nosotros</Link>
                 </div>
             </div>
 
@@ -101,6 +102,7 @@ const Navbar = () => {
 
                     <div className="space-y-6 flex-1 text-lg font-light text-gray-800">
                         <Link to="/" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Inicio</Link>
+                        <Link to="/nosotros" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Nosotros</Link>
                         <Link to="/catalogo" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Catálogo Completo</Link>
                         <Link to="/mis-ordenes" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Mis Pedidos</Link>
                         {user ? (

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Package, Calendar, DollarSign } from 'lucide-react';
+import { Package, Calendar, DollarSign, XCircle } from 'lucide-react';
 
 const OrdersPage = () => {
     const { user, loading } = useAuth();
@@ -35,6 +35,32 @@ const OrdersPage = () => {
             console.error('Error fetching orders:', error);
         } finally {
             setFetching(false);
+        }
+    };
+
+    const handleCancelOrder = async (orderId) => {
+        if (!window.confirm('¿Estás seguro de que deseas cancelar este pedido? Esta acción no se puede deshacer.')) return;
+
+        try {
+            const { data, error } = await supabase
+                .from('orders')
+                .update({ status: 'cancelled' })
+                .eq('id', orderId)
+                .select();
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                throw new Error("No se pudo actualizar el pedido. Es probable que falten permisos (Policies) en Supabase para permitir que el usuario edite sus propios pedidos.");
+            }
+
+            // Actualizar estado local
+            setOrders(orders.map(order =>
+                order.id === orderId ? { ...order, status: 'cancelled' } : order
+            ));
+        } catch (error) {
+            console.error('Error al cancelar orden:', error);
+            alert('Error: ' + (error.message || 'Hubo un error al cancelar el pedido.'));
         }
     };
 
@@ -79,9 +105,32 @@ const OrdersPage = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold">
-                                    Pendiente de Pago
-                                </span>
+                                {(!order.status || order.status === 'pending') && (
+                                    <button
+                                        onClick={() => handleCancelOrder(order.id)}
+                                        className="flex items-center gap-1 text-red-500 hover:text-red-700 text-sm font-medium transition mr-2"
+                                        title="Cancelar pedido"
+                                    >
+                                        <XCircle size={16} />
+                                        Cancelar
+                                    </button>
+                                )}
+                                {(() => {
+                                    const status = order.status || 'pending';
+                                    const statusConfig = {
+                                        paid: { label: 'Pagado', color: 'bg-green-100 text-green-800' },
+                                        shipped: { label: 'Enviado', color: 'bg-blue-100 text-blue-800' },
+                                        cancelled: { label: 'Cancelado', color: 'bg-red-100 text-red-800' },
+                                        pending: { label: 'Pendiente de Pago', color: 'bg-yellow-100 text-yellow-800' }
+                                    };
+                                    const config = statusConfig[status] || statusConfig.pending;
+
+                                    return (
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${config.color}`}>
+                                            {config.label}
+                                        </span>
+                                    );
+                                })()}
                                 <p className="text-xl font-bold text-gray-800 flex items-center">
                                     <DollarSign size={18} className="text-gray-400" />
                                     {order.total_price}
@@ -99,6 +148,11 @@ const OrdersPage = () => {
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-800">{item.name}</p>
+                                            {item.selectedVariation && (
+                                                <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-medium inline-block mb-1">
+                                                    {item.selectedVariation}
+                                                </span>
+                                            )}
                                             <p className="text-sm text-gray-500">Cant: {item.quantity} x ${item.price}</p>
                                         </div>
                                     </div>

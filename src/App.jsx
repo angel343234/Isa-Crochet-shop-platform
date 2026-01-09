@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import OrdersPage from './pages/OrdersPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';
 import GalleryPage from './pages/GalleryPage';
+import AboutPage from './pages/AboutPage'; // Importación
 import Footer from './components/Footer';
 import { supabase } from './lib/supabase';
 import { MessageCircle } from 'lucide-react';
@@ -32,6 +33,7 @@ function App() {
           <Route path="/mis-ordenes" element={<OrdersPage />} />
           <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/galeria" element={<GalleryPage />} />
+          <Route path="/nosotros" element={<AboutPage />} />
         </Routes>
       </main>
 
