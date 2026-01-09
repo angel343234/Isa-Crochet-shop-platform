@@ -11,16 +11,14 @@ const CartPage = () => {
     const [loading, setLoading] = useState(false);
     const [orderComplete, setOrderComplete] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [orderId, setOrderId] = useState(null); // Nuevo estado para el ID
+    const [orderId, setOrderId] = useState(null);
 
-    // Datos del cliente
     const [formData, setFormData] = useState({
         name: '',
         address: '',
         phone: ''
     });
 
-    // Validadores de cambio
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
@@ -31,28 +29,23 @@ const CartPage = () => {
         setFormData(prev => ({ ...prev, phone: value }));
     };
 
-    // 1. Validar antes de abrir el modal
     const handlePreSubmit = (e) => {
         e.preventDefault();
 
-        // Limpiar teléfono de espacios o guiones
         const cleanPhone = formData.phone.replace(/\D/g, '');
 
         if (cleanPhone.length !== 10) {
-            alert("⚠️ El número de teléfono debe tener 10 dígitos exactamente.");
+            alert("El número de teléfono debe tener 10 dígitos exactamente.");
             return;
         }
 
-        // Si pasa, mostramos modal
         setShowModal(true);
     };
 
-    // 2. Enviar a Supabase (Confirmado)
     const handleConfirmOrder = async () => {
         setLoading(true);
 
         try {
-            // Guardar en Supabase
             const { data, error } = await supabase
                 .from('orders')
                 .insert([
@@ -64,36 +57,34 @@ const CartPage = () => {
                         customer_phone: formData.phone,
                         total_price: totalPrice,
                         items: cart,
-                        user_id: user ? user.id : null // Guardar ID del usuario si existe
+                        user_id: user ? user.id : null
                     }
                 ])
-                .select(); // IMPORTANTE: Pedir que nos devuelva el registro creado
+                .select();
 
             if (error) throw error;
 
-            // Si todo salió bien
             clearCart();
             setShowModal(false);
             if (data && data.length > 0) {
-                setOrderId(data[0].id); // Guardamos el ID
+                setOrderId(data[0].id);
             }
             setOrderComplete(true);
 
         } catch (error) {
             console.error('Error al crear orden:', error);
-            // MOSTRAR EL ERROR REAL PARA PODER ARREGLARLO
+            console.error('Error al crear orden:', error);
             alert('Error detallado: ' + (error.message || JSON.stringify(error)));
         } finally {
             setLoading(false);
         }
     };
 
-    // Pantalla de Éxito
     if (orderComplete) {
         return (
             <div className="max-w-xl mx-auto px-4 py-20 text-center">
                 <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-8 rounded-lg inline-block mb-6 w-full shadow-sm">
-                    <h2 className="text-3xl font-bold mb-4 text-yellow-700">¡Pedido Pendiente de Pago! 🕒</h2>
+                    <h2 className="text-3xl font-bold mb-4 text-yellow-700">¡Pedido Pendiente de Pago!</h2>
 
                     <p className="text-lg mb-2">
                         Tu orden <span className="font-bold">#{orderId}</span> ha sido recibida correctamente.
@@ -118,11 +109,10 @@ const CartPage = () => {
         );
     }
 
-    // Pantalla Carrito Vacío
     if (cart.length === 0) {
         return (
             <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Tu carrito está vacío 🧶</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Tu carrito está vacío</h2>
                 <Link to="/catalogo" className="bg-pink-600 text-white px-6 py-3 rounded-full hover:bg-pink-700 transition">
                     Ver Productos
                 </Link>
@@ -133,24 +123,35 @@ const CartPage = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 gap-12 relative">
 
-            {/* Columna Izquierda: Lista de Productos */}
             <div>
                 <h2 className="text-2xl font-bold mb-6">Tu Pedido</h2>
                 <div className="space-y-4">
-                    {cart.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border">
+
+                    {cart.map((item, index) => (
+                        <div key={`${item.id}-${item.selectedVariation}-${index}`} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border">
                             <div className="flex items-center space-x-4">
                                 <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden">
-                                    {item.image_url && <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />}
+                                    {item.imagen_portada ? (
+                                        <img src={item.imagen_portada} alt={item.nombre} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 text-xs text-gray-500">Sin foto</div>
+                                    )}
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-800">{item.name}</h3>
-                                    <p className="text-gray-500 text-sm">Cantidad: {item.quantity}</p>
-                                    <p className="text-pink-600 font-medium">${item.price * item.quantity}</p>
+                                    <h3 className="font-bold text-gray-800">
+                                        {item.nombre.charAt(0).toUpperCase() + item.nombre.slice(1).toLowerCase()}
+                                    </h3>
+                                    {item.selectedVariation && (
+                                        <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded-full font-medium">
+                                            {item.selectedVariation}
+                                        </span>
+                                    )}
+                                    <p className="text-gray-500 text-sm mt-1">Cantidad: {item.quantity}</p>
+                                    <p className="text-pink-600 font-medium">${item.precio * item.quantity}</p>
                                 </div>
                             </div>
                             <button
-                                onClick={() => removeFromCart(item.id)}
+                                onClick={() => removeFromCart(item.id, item.selectedVariation)}
                                 className="text-red-500 hover:bg-red-50 p-2 rounded-full transition"
                             >
                                 <Trash2 size={20} />
@@ -159,13 +160,13 @@ const CartPage = () => {
                     ))}
                 </div>
 
+
                 <div className="mt-6 flex justify-between items-center text-xl font-bold border-t pt-4">
                     <span>Total:</span>
                     <span>${totalPrice}</span>
                 </div>
             </div>
 
-            {/* Columna Derecha: Formulario de Checkout */}
             <div className="bg-gray-50 p-8 rounded-lg h-fit">
                 <h2 className="text-2xl font-bold mb-6">Datos de Envío</h2>
                 <form onSubmit={handlePreSubmit} className="space-y-4">
@@ -219,44 +220,45 @@ const CartPage = () => {
                 </form>
             </div>
 
-            {/* MODAL DE CONFIRMACIÓN */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirmar Detalle</h3>
+            {
+                showModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirmar Detalle</h3>
 
-                        <div className="space-y-3 mb-6 text-gray-600">
-                            <p><strong>Nombre:</strong> {formData.name}</p>
-                            <p><strong>Dirección:</strong> {formData.address}</p>
-                            <p><strong>Teléfono:</strong> {formData.phone}</p>
-                            <div className="border-t pt-2 mt-2">
-                                <p className="font-bold text-lg text-pink-600 flex justify-between">
-                                    <span>Total a Pagar:</span>
-                                    <span>${totalPrice}</span>
-                                </p>
+                            <div className="space-y-3 mb-6 text-gray-600">
+                                <p><strong>Nombre:</strong> {formData.name}</p>
+                                <p><strong>Dirección:</strong> {formData.address}</p>
+                                <p><strong>Teléfono:</strong> {formData.phone}</p>
+                                <div className="border-t pt-2 mt-2">
+                                    <p className="font-bold text-lg text-pink-600 flex justify-between">
+                                        <span>Total a Pagar:</span>
+                                        <span>${totalPrice}</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex space-x-4">
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={handleConfirmOrder}
+                                    disabled={loading}
+                                    className="flex-1 py-3 bg-pink-600 text-white rounded-lg font-bold hover:bg-pink-700 transition disabled:opacity-50"
+                                >
+                                    {loading ? 'Enviando...' : 'Confirmar Compra'}
+                                </button>
                             </div>
                         </div>
-
-                        <div className="flex space-x-4">
-                            <button
-                                onClick={() => setShowModal(false)}
-                                className="flex-1 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition"
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={handleConfirmOrder}
-                                disabled={loading}
-                                className="flex-1 py-3 bg-pink-600 text-white rounded-lg font-bold hover:bg-pink-700 transition disabled:opacity-50"
-                            >
-                                {loading ? 'Enviando...' : 'Confirmar Compra'}
-                            </button>
-                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-        </div>
+        </div >
     );
 };
 

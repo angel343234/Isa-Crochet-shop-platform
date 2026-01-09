@@ -1,18 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 const GalleryPage = () => {
-    const photos = [
-        { id: 1, src: '/images/mixed-bouquet.jpg', alt: 'Mix de Flores', span: 'row-span-2' },
-        { id: 2, src: '/images/purple-buds.jpg', alt: 'Detalles en Lila', span: 'col-span-1' },
-        { id: 3, src: '/images/red-roses.jpg', alt: 'Rosas Rojas', span: 'row-span-1' },
-        { id: 4, src: '/images/colorful-tulips.jpg', alt: 'Tulipanes de Colores', span: 'row-span-2' },
-        { id: 5, src: '/images/tulips-macro.jpg', alt: 'Texturas Suaves', span: 'col-span-1' },
-        { id: 6, src: '/images/gallery-sunflowers.jpg', alt: 'Girasoles Radiantes', span: 'row-span-1' },
-        { id: 7, src: '/images/lily-tulip-bouquet.jpg', alt: 'Ramo de Lirios', span: 'col-span-1 md:col-span-2' },
-        { id: 8, src: '/images/blue-purple-bouquet.jpg', alt: 'Tonos Fríos', span: 'col-span-1' },
-        { id: 9, src: '/images/lily-rose-closeup.jpg', alt: 'Detalle Rosa y Lirio', span: 'row-span-1' },
-        { id: 10, src: '/images/yarn-tulips.jpg', alt: 'Proceso Creativo', span: 'col-span-1' },
-    ];
+    const [galleryItems, setGalleryItems] = useState([]);
+
+    useEffect(() => {
+        const fetchGalleryProducts = async () => {
+            try {
+                // Fetch relevant fields to filter client-side for robust accent/case handling
+                // Fetch all columns to avoid typos in column names
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*');
+
+                if (error) {
+                    console.error('Error fetching gallery items:', error);
+                } else if (data) {
+                    // Filter for 'galeria' (ignoring case and accents)
+                    // e.g. 'Galería', 'GALERIA', 'galeria', 'Ramos, Galeria' -> all match 'galeria'
+                    const galleryProducts = data.filter(item => {
+                        if (!item.categoria) return false;
+                        const normalized = item.categoria.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                        return normalized.includes('galeria');
+                    });
+
+                    // Map DB items to gallery format
+                    // Map DB items to gallery format - No span needed for Masonry
+                    const dbItems = galleryProducts.map(item => ({
+                        id: `db-${item.id}`,
+                        src: item.imagen_portada,
+                        alt: item.nombre
+                    }));
+
+                    setGalleryItems(dbItems);
+                }
+            } catch (err) {
+                console.error('Network error:', err);
+            }
+        };
+
+        fetchGalleryProducts();
+    }, []);
+
+    const formatText = (str) => {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    };
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-12">
@@ -25,19 +58,20 @@ const GalleryPage = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[250px]">
-                {photos.map((photo, index) => (
+            {/* Masonry Layout using CSS Columns */}
+            <div className="columns-1 md:columns-3 gap-4 space-y-4">
+                {galleryItems.map((photo) => (
                     <div
                         key={photo.id}
-                        className={`relative rounded-lg overflow-hidden group ${photo.span} ${index % 3 === 0 ? 'md:row-span-2' : ''}`}
+                        className="relative rounded-lg overflow-hidden group break-inside-avoid mb-4"
                     >
                         <img
                             src={photo.src}
                             alt={photo.alt}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className="w-full h-auto object-contain transition-transform duration-700 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                            <span className="text-white font-serif text-lg">{photo.alt}</span>
+                            <span className="text-white font-serif text-lg">{formatText(photo.alt)}</span>
                         </div>
                     </div>
                 ))}
