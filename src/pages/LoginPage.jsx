@@ -24,16 +24,21 @@ const LoginPage = () => {
         }
     };
 
-    const handleResetPassword = async () => {
-        if (!email) return alert("Por favor escribe tu correo primero.");
+    const handleResetPassword = async (e) => {
+        if (e) e.preventDefault();
+
+        if (!email) return alert("Por favor escribe tu correo primero para enviarte el enlace de recuperación.");
+
         try {
             setLoading(true);
+            console.log("Iniciando recuperación para:", email);
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
                 redirectTo: window.location.origin + '/update-password',
             });
             if (error) throw error;
-            alert("Te hemos enviado un correo para restablecer tu contraseña.");
+            alert("Te hemos enviado un correo para restablecer tu contraseña. Revisa tu bandeja de entrada (y spam).");
         } catch (error) {
+            console.error("Error recuperación:", error);
             alert(error.message);
         } finally {
             setLoading(false);

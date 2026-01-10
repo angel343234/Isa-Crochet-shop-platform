@@ -183,56 +183,82 @@ const CartPage = () => {
             </div>
 
             <div className="bg-gray-50 p-8 rounded-lg h-fit">
-                <h2 className="text-2xl font-bold mb-6">Datos de Envío</h2>
-                <form onSubmit={handlePreSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
-                        <input
-                            required
-                            name="name"
-                            type="text"
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-pink-500 outline-none"
-                            placeholder="Ej. María Pérez"
-                            value={formData.name}
-                            onChange={handleInputChange}
-                        />
+                {!user ? (
+                    <div className="text-center py-10">
+                        <div className="mb-4 text-pink-200 flex justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold mb-3 text-gray-800">Inicia Sesión</h2>
+                        <p className="text-gray-600 mb-8">
+                            Para completar tu pedido y asegurar el seguimiento de tu compra, es necesario que inicies sesión.
+                        </p>
+                        <Link
+                            to="/login"
+                            className="block w-full bg-pink-600 text-white py-3 rounded-lg font-bold hover:bg-pink-700 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                        >
+                            Ir a Iniciar Sesión
+                        </Link>
+                        <p className="mt-4 text-sm text-gray-500">
+                            ¿No tienes cuenta? <Link to="/login" className="text-pink-600 font-bold hover:underline">Regístrate aquí</Link>
+                        </p>
                     </div>
+                ) : (
+                    <>
+                        <h2 className="text-2xl font-bold mb-6">Datos de Envío</h2>
+                        <form onSubmit={handlePreSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                                <input
+                                    required
+                                    name="name"
+                                    type="text"
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-pink-500 outline-none"
+                                    placeholder="Ej. María Pérez"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                />
+                            </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Dirección de Entrega</label>
-                        <textarea
-                            required
-                            name="address"
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-pink-500 outline-none"
-                            rows="3"
-                            placeholder="Calle, Número, Colonia..."
-                            value={formData.address}
-                            onChange={handleInputChange}
-                        ></textarea>
-                    </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Dirección de Entrega</label>
+                                <textarea
+                                    required
+                                    name="address"
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-pink-500 outline-none"
+                                    rows="3"
+                                    placeholder="Calle, Número, Colonia..."
+                                    value={formData.address}
+                                    onChange={handleInputChange}
+                                ></textarea>
+                            </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono (10 dígitos)</label>
-                        <input
-                            required
-                            name="phone"
-                            type="tel"
-                            maxLength={10}
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-pink-500 outline-none"
-                            placeholder="4491234567"
-                            value={formData.phone}
-                            onChange={handlePhoneChange}
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Solo números, sin espacios ni guiones.</p>
-                    </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono (10 dígitos)</label>
+                                <input
+                                    required
+                                    name="phone"
+                                    type="tel"
+                                    maxLength={10}
+                                    className="w-full p-2 border rounded focus:ring-2 focus:ring-pink-500 outline-none"
+                                    placeholder="4491234567"
+                                    value={formData.phone}
+                                    onChange={handlePhoneChange}
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Solo números, sin espacios ni guiones.</p>
+                            </div>
 
-                    <button
-                        type="submit"
-                        className="w-full bg-pink-600 text-white py-3 rounded-lg font-bold hover:bg-pink-700 transition mt-4"
-                    >
-                        Revisar Pedido
-                    </button>
-                </form>
+                            <button
+                                type="submit"
+                                className="w-full bg-pink-600 text-white py-3 rounded-lg font-bold hover:bg-pink-700 transition mt-4 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                            >
+                                Revisar Pedido
+                            </button>
+                        </form>
+                    </>
+                )}
             </div>
 
             {

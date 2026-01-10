@@ -82,9 +82,8 @@ const Navbar = () => {
             <div className="hidden md:block border-t border-white/10 bg-brand-pink">
                 <div className="max-w-7xl mx-auto flex justify-center space-x-12 py-3 text-sm font-medium tracking-widest text-white uppercase">
                     <Link to="/" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Inicio</Link>
-                    <Link to="/catalogo" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Colección</Link>
-                    <Link to="/catalogo?cat=flores" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Flores</Link>
-                    <Link to="/catalogo?cat=ramos" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Ramos</Link>
+                    <Link to="/coleccion" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Colección</Link>
+                    <Link to="/catalogo" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Tienda</Link>
                     <Link to="/galeria" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Galería</Link>
                     <Link to="/nosotros" className="hover:text-brand-light transition hover:underline underline-offset-4 decoration-brand-light">Nosotros</Link>
                 </div>
@@ -102,8 +101,10 @@ const Navbar = () => {
 
                     <div className="space-y-6 flex-1 text-lg font-light text-gray-800">
                         <Link to="/" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Inicio</Link>
+                        <Link to="/coleccion" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Colección</Link>
+                        <Link to="/catalogo" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Tienda</Link>
+                        <Link to="/galeria" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Galería</Link>
                         <Link to="/nosotros" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Nosotros</Link>
-                        <Link to="/catalogo" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Catálogo Completo</Link>
                         <Link to="/mis-ordenes" className="block border-b pb-2" onClick={() => setIsMenuOpen(false)}>Mis Pedidos</Link>
                         {user ? (
                             <button onClick={handleLogout} className="text-red-500 text-left w-full pt-4">Cerrar Sesión</button>

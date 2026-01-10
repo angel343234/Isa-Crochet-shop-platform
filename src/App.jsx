@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import OrdersPage from './pages/OrdersPage';
 import UpdatePasswordPage from './pages/UpdatePasswordPage';
 import GalleryPage from './pages/GalleryPage';
+import CollectionPage from './pages/CollectionPage';
 import AboutPage from './pages/AboutPage'; // Importación
 import Footer from './components/Footer';
 import { supabase } from './lib/supabase';
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/catalogo" element={<CatalogPage />} />
+          <Route path="/coleccion" element={<CollectionPage />} />
           <Route path="/carrito" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/mis-ordenes" element={<OrdersPage />} />
